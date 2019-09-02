@@ -20,6 +20,7 @@ namespace CacheLib.Service.Business
         {
             try
             {
+                //TODO: Validar Argment Null
                 this.Cache.Set(key, value, DateTimeOffset.Now.AddSeconds(timeInSeconds));
             }
             catch (Exception ex)
