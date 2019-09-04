@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CacheLib.Service.Business
+namespace Cache.Service.Business
 {
     public class LogService
     {

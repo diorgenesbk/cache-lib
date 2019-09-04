@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace CacheLib.Service.Business
+namespace Cache.Service.Business
 {
     public class CacheService
     {
@@ -20,8 +20,14 @@ namespace CacheLib.Service.Business
         {
             try
             {
-                //TODO: Validar Argment Null
+                if (key == null)
+                    throw new ArgumentNullException($"Invalid key!! - {key}");
+
                 this.Cache.Set(key, value, DateTimeOffset.Now.AddSeconds(timeInSeconds));
+            }
+            catch (ArgumentNullException ae)
+            {
+                this.LogService.LogError(ae, $"Error when try to add value into Cache - key: {key}");
             }
             catch (Exception ex)
             {
@@ -36,11 +42,18 @@ namespace CacheLib.Service.Business
         {
             try
             {
+                if (key == null)
+                    throw new ArgumentNullException($"Invalid key!! - {key}");
+
                 this.Set(key, value, 1800);
+            }
+            catch (ArgumentNullException ae)
+            {
+                this.LogService.LogError(ae, $"Error when try to set value into Cache - key: {key}");
             }
             catch (Exception ex)
             {
-                this.LogService.LogError(ex, $"Error when try to add value into Cache! - Key: {key}");
+                this.LogService.LogError(ex, $"Error when try to set value into Cache! - Key: {key}");
                 return false;
             }
 
@@ -51,7 +64,14 @@ namespace CacheLib.Service.Business
         {
             try
             {
+                if (key == null)
+                    throw new ArgumentNullException($"Invalid key!! - {key}");
+
                 return this.Cache.Get<T>(key);
+            }
+            catch (ArgumentNullException ae)
+            {
+                this.LogService.LogError(ae, $"Error when try to get cached item - key: {key}");
             }
             catch (Exception ex)
             {
@@ -65,7 +85,14 @@ namespace CacheLib.Service.Business
         {
             try
             {
+                if (key == null)
+                    throw new ArgumentNullException($"Invalid key!! - {key}");
+
                 this.Cache.Remove(key);
+            }
+            catch (ArgumentNullException ae)
+            {
+                this.LogService.LogError(ae, $"Error when try to del value from Cache - key: {key}");
             }
             catch (Exception ex)
             {
@@ -104,9 +131,9 @@ namespace CacheLib.Service.Business
             try
             {
                 if (key == null)
-                    throw new ArgumentException($"Invalid key!! - {key}");
+                    throw new ArgumentNullException($"Invalid key!! - {key}");
 
-                string cachedItem = this.Get<string>(key);
+                var cachedItem = this.Get<int?>(key);
 
                 if (cachedItem == null || cachedItem.Equals(string.Empty))
                 {
@@ -114,7 +141,7 @@ namespace CacheLib.Service.Business
                 }
                 else
                 {
-                    var tryResult = int.TryParse(cachedItem, out int value);
+                    var tryResult = int.TryParse(cachedItem.ToString(), out int value);
 
                     if (!tryResult)
                     {
@@ -130,7 +157,7 @@ namespace CacheLib.Service.Business
                 return this.Get<int>(key);
 
             }
-            catch (ArgumentException ae)
+            catch (ArgumentNullException ae)
             {
                 this.LogService.LogError(ae, $"Error when try to exec Increment - key: {key}");
             }
@@ -151,7 +178,7 @@ namespace CacheLib.Service.Business
             try
             {
                 if (key == null)
-                    throw new ArgumentException($"Invalid key!! - {key}");
+                    throw new ArgumentNullException($"Invalid key!! - {key}");
 
                 string cachedItem = this.Get<string>(key);
 
@@ -167,7 +194,7 @@ namespace CacheLib.Service.Business
                     this.InsertMemberIfNotExists(key, scoreMemberWhiteSpaceSeparated);
                 }
             }
-            catch (ArgumentException ae)
+            catch (ArgumentNullException ae)
             {
                 this.LogService.LogError(ae, $"Error when try to exec Zadd - key: {key}");
                 return 0;
@@ -186,7 +213,7 @@ namespace CacheLib.Service.Business
             try
             {
                 if (key == null)
-                    throw new ArgumentException($"Invalid key!! - {key}");
+                    throw new ArgumentNullException($"Invalid key!! - {key}");
 
                 List<string> scoreMemberList = this.Get<List<string>>(key);
 
@@ -195,7 +222,7 @@ namespace CacheLib.Service.Business
                     return scoreMemberList.Count;
                 }
             }
-            catch (ArgumentException ae)
+            catch (ArgumentNullException ae)
             {
                 this.LogService.LogError(ae, $"Error when try to exec Zcard - key: {key}");
             }
@@ -213,7 +240,7 @@ namespace CacheLib.Service.Business
             try
             {
                 if (key == null)
-                    throw new ArgumentException($"Invalid key!! - {key}");
+                    throw new ArgumentNullException($"Invalid key!! - {key}");
 
                 List<string> scoreMemberList = this.Get<List<string>>(key);
 
@@ -226,7 +253,7 @@ namespace CacheLib.Service.Business
                     }
                 }
             }
-            catch (ArgumentException ae)
+            catch (ArgumentNullException ae)
             {
                 this.LogService.LogError(ae, $"Error when try to exec ZRank - key: {key}");
             }
@@ -244,7 +271,7 @@ namespace CacheLib.Service.Business
             try
             {
                 if (key == null)
-                    throw new ArgumentException($"Invalid key!! - {key}");
+                    throw new ArgumentNullException($"Invalid key!! - {key}");
 
                 List<string> scoreMemberList = this.Get<List<string>>(key);
 
@@ -255,18 +282,18 @@ namespace CacheLib.Service.Business
                 calculatedStop = stop < 0 ? scoreMemberList.Count + stop : stop;
 
                 if (calculatedStart < calculatedStop)
-                    throw new ArgumentException($"Invalid range - start: {start} and stop: {stop} - key: {key}");
+                    throw new ArgumentNullException($"Invalid range - start: {start} and stop: {stop} - key: {key}");
 
                 if (scoreMemberList != null && scoreMemberList.Count > 0)
                 {
-                    for(int i = 0; i < scoreMemberList.Count; i++)
+                    for (int i = 0; i < scoreMemberList.Count; i++)
                     {
                         if (i >= start && i <= stop)
                             rangeScoreMember.Add(scoreMemberList[i]);
                     }
                 }
             }
-            catch (ArgumentException ae)
+            catch (ArgumentNullException ae)
             {
                 this.LogService.LogError(ae, $"Error when try to exec ZRank - key: {key}");
             }
