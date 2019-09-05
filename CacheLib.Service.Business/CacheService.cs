@@ -180,7 +180,7 @@ namespace Cache.Service.Business
                 if (key == null)
                     throw new ArgumentNullException($"Invalid key!! - {key}");
 
-                string cachedItem = this.Get<string>(key);
+                string[] cachedItem = this.Get<string[]>(key);
 
                 if (cachedItem == null || cachedItem.Equals(string.Empty))
                 {
@@ -215,11 +215,11 @@ namespace Cache.Service.Business
                 if (key == null)
                     throw new ArgumentNullException($"Invalid key!! - {key}");
 
-                List<string> scoreMemberList = this.Get<List<string>>(key);
+                string[] scoreMemberList = this.Get<string[]>(key);
 
-                if (scoreMemberList != null && scoreMemberList.Count >= 0)
+                if (scoreMemberList != null && scoreMemberList.ToList().Count >= 0)
                 {
-                    return scoreMemberList.Count;
+                    return scoreMemberList.ToList().Count;
                 }
             }
             catch (ArgumentNullException ae)
@@ -242,13 +242,13 @@ namespace Cache.Service.Business
                 if (key == null)
                     throw new ArgumentNullException($"Invalid key!! - {key}");
 
-                List<string> scoreMemberList = this.Get<List<string>>(key);
+                string[] scoreMemberList = this.Get<string[]>(key);
 
-                if (scoreMemberList != null && scoreMemberList.Count >= 0)
+                if (scoreMemberList != null && scoreMemberList.ToList().Count >= 0)
                 {
-                    for (int i = 0; i < scoreMemberList.ToArray().Length; i++)
+                    for (int i = 0; i < scoreMemberList.Length; i++)
                     {
-                        if (scoreMemberList[i] == member)
+                        if (scoreMemberList[i].Split(" ")[1] == member)
                             return i.ToString();
                     }
                 }
@@ -273,20 +273,20 @@ namespace Cache.Service.Business
                 if (key == null)
                     throw new ArgumentNullException($"Invalid key!! - {key}");
 
-                List<string> scoreMemberList = this.Get<List<string>>(key);
+                string[] scoreMemberList = this.Get<string[]>(key);
 
                 int calculatedStart, calculatedStop;
 
-                calculatedStart = start < 0 ? scoreMemberList.Count + start : start;
+                calculatedStart = start < 0 ? scoreMemberList.ToList().Count + start : start;
 
-                calculatedStop = stop < 0 ? scoreMemberList.Count + stop : stop;
+                calculatedStop = stop < 0 ? scoreMemberList.ToList().Count + stop : stop;
 
-                if (calculatedStart < calculatedStop)
+                if (calculatedStart > calculatedStop)
                     throw new ArgumentNullException($"Invalid range - start: {start} and stop: {stop} - key: {key}");
 
-                if (scoreMemberList != null && scoreMemberList.Count > 0)
+                if (scoreMemberList != null && scoreMemberList.ToList().Count > 0)
                 {
-                    for (int i = 0; i < scoreMemberList.Count; i++)
+                    for (int i = 0; i < scoreMemberList.ToList().Count; i++)
                     {
                         if (i >= start && i <= stop)
                             rangeScoreMember.Add(scoreMemberList[i]);
@@ -317,7 +317,7 @@ namespace Cache.Service.Business
                     string[] secondaryScoreMemberSplited = scoreMemberWhiteSpaceSeparated[j + 1].Split(' ');
                     string secondaryScore = secondaryScoreMemberSplited[0];
 
-                    if (decimal.Parse(secondaryScore) < decimal.Parse(principalScore))
+                    if (decimal.Parse(principalScore) > decimal.Parse(secondaryScore))
                     {
                         var auxiliar = scoreMemberWhiteSpaceSeparated[j];
                         scoreMemberWhiteSpaceSeparated[j] = scoreMemberWhiteSpaceSeparated[j + 1];
@@ -330,9 +330,9 @@ namespace Cache.Service.Business
             return scoreMemberWhiteSpaceSeparated;
         }
 
-        private void UpdateScoreIfMemberExists(string key, IList<string> scoreMemberParameter)
+        private void UpdateScoreIfMemberExists(string key, string[] scoreMemberParameter)
         {
-            var scoreMemberList = this.Get<List<string>>(key);
+            var scoreMemberList = this.Get<string[]>(key);
 
             for (int i = 0; i < scoreMemberParameter.ToArray().Length; i++)
             {
@@ -356,14 +356,14 @@ namespace Cache.Service.Business
             }
             this.Del(key);
 
-            scoreMemberList = this.OrderMembersByScore(scoreMemberList.ToArray()).ToList();
+            scoreMemberList = this.OrderMembersByScore(scoreMemberList);
 
             this.Set(key, scoreMemberList);
         }
 
         private void InsertMemberIfNotExists(string key, IList<string> scoreMemberParameter)
         {
-            var scoreMemberList = this.Get<List<string>>(key);
+            var scoreMemberList = this.Get<string[]>(key);
 
             List<string> memberList = scoreMemberList.Select(sm => sm.Split(' ')[1]).ToList();
 
@@ -371,13 +371,13 @@ namespace Cache.Service.Business
             {
                 if (!memberList.Contains(smp.Split(' ')[1]))
                 {
-                    scoreMemberList.Add(smp);
+                    scoreMemberList = scoreMemberList.Append(smp).ToArray();
                 }
             });
 
             this.Del(key);
 
-            scoreMemberList = this.OrderMembersByScore(scoreMemberList.ToArray()).ToList();
+            scoreMemberList = this.OrderMembersByScore(scoreMemberList);
 
             this.Set(key, scoreMemberList);
         }
