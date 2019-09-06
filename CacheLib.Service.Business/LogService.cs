@@ -8,15 +8,5 @@ namespace Cache.Service.Business
         {
             //TODO: Implementar log de erro
         }
-
-        public void LogWaring(string message)
-        {
-            //TODO: Implementar log de warning
-        }
-
-        public void LogInformation(string message)
-        {
-            //TODO: Implementar Log de information
-        }
     }
 }

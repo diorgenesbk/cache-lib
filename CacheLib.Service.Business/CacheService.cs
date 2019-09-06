@@ -20,8 +20,7 @@ namespace Cache.Service.Business
         {
             try
             {
-                if (key == null)
-                    throw new ArgumentNullException($"Invalid key!! - {key}");
+                this.ValidateKey(key);
 
                 this.Cache.Set(key, value, DateTimeOffset.Now.AddSeconds(timeInSeconds));
             }
@@ -42,9 +41,8 @@ namespace Cache.Service.Business
         {
             try
             {
-                if (key == null)
-                    throw new ArgumentNullException($"Invalid key!! - {key}");
-
+                this.ValidateKey(key);
+ 
                 this.Set(key, value, 1800);
             }
             catch (ArgumentNullException ae)
@@ -64,9 +62,8 @@ namespace Cache.Service.Business
         {
             try
             {
-                if (key == null)
-                    throw new ArgumentNullException($"Invalid key!! - {key}");
-
+                this.ValidateKey(key);
+ 
                 return this.Cache.Get<T>(key);
             }
             catch (ArgumentNullException ae)
@@ -85,8 +82,7 @@ namespace Cache.Service.Business
         {
             try
             {
-                if (key == null)
-                    throw new ArgumentNullException($"Invalid key!! - {key}");
+                this.ValidateKey(key);
 
                 this.Cache.Remove(key);
             }
@@ -130,8 +126,7 @@ namespace Cache.Service.Business
         {
             try
             {
-                if (key == null)
-                    throw new ArgumentNullException($"Invalid key!! - {key}");
+                this.ValidateKey(key);
 
                 var cachedItem = this.Get<int?>(key);
 
@@ -177,8 +172,7 @@ namespace Cache.Service.Business
         {
             try
             {
-                if (key == null)
-                    throw new ArgumentNullException($"Invalid key!! - {key}");
+                this.ValidateKey(key);
 
                 string[] cachedItem = this.Get<string[]>(key);
 
@@ -212,8 +206,7 @@ namespace Cache.Service.Business
         {
             try
             {
-                if (key == null)
-                    throw new ArgumentNullException($"Invalid key!! - {key}");
+                this.ValidateKey(key);
 
                 string[] scoreMemberList = this.Get<string[]>(key);
 
@@ -239,8 +232,7 @@ namespace Cache.Service.Business
         {
             try
             {
-                if (key == null)
-                    throw new ArgumentNullException($"Invalid key!! - {key}");
+                this.ValidateKey(key);
 
                 string[] scoreMemberList = this.Get<string[]>(key);
 
@@ -270,8 +262,7 @@ namespace Cache.Service.Business
             List<string> rangeScoreMember = new List<string>();
             try
             {
-                if (key == null)
-                    throw new ArgumentNullException($"Invalid key!! - {key}");
+                this.ValidateKey(key);
 
                 string[] scoreMemberList = this.Get<string[]>(key);
 
@@ -322,7 +313,6 @@ namespace Cache.Service.Business
                         var auxiliar = scoreMemberWhiteSpaceSeparated[j];
                         scoreMemberWhiteSpaceSeparated[j] = scoreMemberWhiteSpaceSeparated[j + 1];
                         scoreMemberWhiteSpaceSeparated[j + 1] = auxiliar;
-
                     }
                 }
             }
@@ -380,6 +370,13 @@ namespace Cache.Service.Business
             scoreMemberList = this.OrderMembersByScore(scoreMemberList);
 
             this.Set(key, scoreMemberList);
+        }
+
+        private void ValidateKey(string key)
+        {
+            this.ValidateKey(key);
+                throw new ArgumentNullException("Key can't be null!");
+                
         }
     }
 }
