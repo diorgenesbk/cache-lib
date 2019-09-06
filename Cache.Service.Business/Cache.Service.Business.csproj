@@ -8,4 +8,8 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Cache.Domain\Cache.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

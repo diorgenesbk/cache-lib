@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Cache.Domain.Constants;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +27,12 @@ namespace Cache.Service.Business
             }
             catch (ArgumentNullException ae)
             {
-                this.LogService.LogError(ae, $"Error when try to add value into Cache - key: {key}");
+                this.LogService.LogError(ae, string.Format(CacheConstants.ErrorMessageSet, key));
+                return false;
             }
             catch (Exception ex)
             {
-                this.LogService.LogError(ex, $"Error when try to add value into Cache! - Key: {key}");
+                this.LogService.LogError(ex, string.Format(CacheConstants.ErrorMessageSet, key));
                 return false;
             }
 
@@ -47,11 +49,12 @@ namespace Cache.Service.Business
             }
             catch (ArgumentNullException ae)
             {
-                this.LogService.LogError(ae, $"Error when try to set value into Cache - key: {key}");
+                this.LogService.LogError(ae, string.Format(CacheConstants.ErrorMessageSet, key));
+                return false;
             }
             catch (Exception ex)
             {
-                this.LogService.LogError(ex, $"Error when try to set value into Cache! - Key: {key}");
+                this.LogService.LogError(ex, string.Format(CacheConstants.ErrorMessageSet, key));
                 return false;
             }
 
@@ -68,11 +71,11 @@ namespace Cache.Service.Business
             }
             catch (ArgumentNullException ae)
             {
-                this.LogService.LogError(ae, $"Error when try to get cached item - key: {key}");
+                this.LogService.LogError(ae, string.Format(CacheConstants.ErrorMessageGet, key));
             }
             catch (Exception ex)
             {
-                this.LogService.LogError(ex, $"Error when try to get cached item! - Key: {key}");
+                this.LogService.LogError(ex, string.Format(CacheConstants.ErrorMessageGet, key));
             }
 
             return default;
@@ -88,11 +91,12 @@ namespace Cache.Service.Business
             }
             catch (ArgumentNullException ae)
             {
-                this.LogService.LogError(ae, $"Error when try to del value from Cache - key: {key}");
+                this.LogService.LogError(ae, string.Format(CacheConstants.ErrorMessageDel, key));
+                return false;
             }
             catch (Exception ex)
             {
-                this.LogService.LogError(ex, $"Error when try to del value from Cache! - Key: {key}");
+                this.LogService.LogError(ex, string.Format(CacheConstants.ErrorMessageDel, key));
                 return false;
             }
 
@@ -117,7 +121,7 @@ namespace Cache.Service.Business
             }
             catch (Exception ex)
             {
-                this.LogService.LogError(ex, $"Error when try to get DbSize");
+                this.LogService.LogError(ex, CacheConstants.ErrorMessageDbSize);
             }
             return 0;
         }
@@ -140,7 +144,7 @@ namespace Cache.Service.Business
 
                     if (!tryResult)
                     {
-                        throw new InvalidCastException($"The value represents from key: {key}, is not an int");
+                        throw new InvalidCastException(string.Format(CacheConstants.ErrorMessageIncrInvalidCast, key));
                     }
                     else
                     {
@@ -154,15 +158,15 @@ namespace Cache.Service.Business
             }
             catch (ArgumentNullException ae)
             {
-                this.LogService.LogError(ae, $"Error when try to exec Increment - key: {key}");
+                this.LogService.LogError(ae, string.Format(CacheConstants.ErrorMessageIncr, key));
             }
             catch (InvalidCastException ice)
             {
-                this.LogService.LogError(ice, $"Error when try to exec Increment - key: {key}");
+                this.LogService.LogError(ice, string.Format(CacheConstants.ErrorMessageIncr, key));
             }
             catch (Exception ex)
             {
-                this.LogService.LogError(ex, $"Error when try to exec Increment - key: {key}");
+                this.LogService.LogError(ex, string.Format(CacheConstants.ErrorMessageIncr, key));
             }
 
             return 0;
@@ -190,12 +194,12 @@ namespace Cache.Service.Business
             }
             catch (ArgumentNullException ae)
             {
-                this.LogService.LogError(ae, $"Error when try to exec Zadd - key: {key}");
+                this.LogService.LogError(ae, string.Format(CacheConstants.ErrorMessageZadd, key));
                 return 0;
             }
             catch (Exception ex)
             {
-                this.LogService.LogError(ex, $"Error when try to exec Zadd - key: {key}");
+                this.LogService.LogError(ex, string.Format(CacheConstants.ErrorMessageZadd, key));
                 return 0;
             }
 
@@ -217,11 +221,11 @@ namespace Cache.Service.Business
             }
             catch (ArgumentNullException ae)
             {
-                this.LogService.LogError(ae, $"Error when try to exec Zcard - key: {key}");
+                this.LogService.LogError(ae, string.Format(CacheConstants.ErrorMessageZcard, key));
             }
             catch (Exception ex)
             {
-                this.LogService.LogError(ex, $"Error when try to exec Zcard - key: {key}");
+                this.LogService.LogError(ex, string.Format(CacheConstants.ErrorMessageZcard, key));
             }
 
             return 0;
@@ -247,11 +251,11 @@ namespace Cache.Service.Business
             }
             catch (ArgumentNullException ae)
             {
-                this.LogService.LogError(ae, $"Error when try to exec ZRank - key: {key}");
+                this.LogService.LogError(ae, string.Format(CacheConstants.ErrorMessageZRank, key));
             }
             catch (Exception ex)
             {
-                this.LogService.LogError(ex, $"Error when try to exec ZRank - key: {key}");
+                this.LogService.LogError(ex, string.Format(CacheConstants.ErrorMessageZRank, key));
             }
 
             return "nil";
@@ -273,7 +277,7 @@ namespace Cache.Service.Business
                 calculatedStop = stop < 0 ? scoreMemberList.ToList().Count + stop : stop;
 
                 if (calculatedStart > calculatedStop)
-                    throw new ArgumentNullException($"Invalid range - start: {start} and stop: {stop} - key: {key}");
+                    throw new ArgumentException($"Invalid range - start: {start} and stop: {stop} - key: {key}");
 
                 if (scoreMemberList != null && scoreMemberList.ToList().Count > 0)
                 {
@@ -284,13 +288,17 @@ namespace Cache.Service.Business
                     }
                 }
             }
-            catch (ArgumentNullException ae)
+            catch (ArgumentNullException ane)
             {
-                this.LogService.LogError(ae, $"Error when try to exec ZRank - key: {key}");
+                this.LogService.LogError(ane, string.Format(CacheConstants.ErrorMessageZRange, key));
+            }
+            catch(ArgumentException ae)
+            {
+                this.LogService.LogError(ae, string.Format(CacheConstants.ErrorMessageZRange, key));
             }
             catch (Exception ex)
             {
-                this.LogService.LogError(ex, $"Error when try to exec ZRank - key: {key}");
+                this.LogService.LogError(ex, string.Format(CacheConstants.ErrorMessageZRange, key));
             }
 
             return rangeScoreMember;
@@ -374,8 +382,8 @@ namespace Cache.Service.Business
 
         private void ValidateKey(string key)
         {
-            this.ValidateKey(key);
-                throw new ArgumentNullException("Key can't be null!");
+            if(key == null)
+                throw new ArgumentNullException(CacheConstants.ErrorMessageInvalidKey);
                 
         }
     }

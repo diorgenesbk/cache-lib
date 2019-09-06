@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Cache.Domain\Cache.Domain.csproj" />
-    <ProjectReference Include="..\CacheLib.Service.Business\Cache.Service.Business.csproj" />
+    <ProjectReference Include="..\Cache.Service.Business\Cache.Service.Business.csproj" />
   </ItemGroup>
 
 </Project>
