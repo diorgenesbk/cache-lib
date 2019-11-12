@@ -40,7 +40,7 @@ namespace Cache.Service.Tests
         [Test]
         public void GetFromCache()
         {
-            Person person = new Person("Diórgenes", 26);
+            Person person = new Person("DiÃ³rgenes", 26);
             this.CacheService.Set("CacheServiceTest:GetFromCache", person);
 
             var cachedItem = this.CacheService.Get<Person>("CacheServiceTest:GetFromCache");
@@ -67,7 +67,7 @@ namespace Cache.Service.Tests
         [Test]
         public void DeleteFromCache()
         {
-            Person person = new Person("Diórgenes", 26);
+            Person person = new Person("DiÃ³rgenes", 26);
             this.CacheService.Set("CacheServiceTest:DeleteFromCache", person);
 
             this.CacheService.Del("CacheServiceTest:DeleteFromCache");
@@ -105,135 +105,6 @@ namespace Cache.Service.Tests
         public void DbSizeWithZeroElements()
         {
             Assert.AreEqual(0, this.CacheService.DbSize());
-        }
-
-        [Test]
-        public void IncrWithNoCachedItem()
-        {
-            string key = "CacheServiceTest:IncrWithNoCachedItem";
-
-            this.CacheService.Incr(key);
-
-            var cachedItem = this.CacheService.Get<int>(key);
-
-            Assert.AreEqual(0, cachedItem);
-        }
-
-        [Test]
-        public void IncrWithExistingCachedItem()
-        {
-            string key = "CacheServiceTest:IncrWithExistingCachedItem";
-
-            this.CacheService.Incr(key);
-            this.CacheService.Incr(key);
-            this.CacheService.Incr(key);
-
-            var cachedItem = this.CacheService.Get<int>(key);
-
-            Assert.AreEqual(2, cachedItem);
-        }
-
-        [Test]
-        public void InsertMembersZADD()
-        {
-            string key = "CacheServiceTest:InsertMembersZADD";
-
-            this.CacheService.Zadd(key, new string[] { "1 member1","2 member2","3 member3","4 member4","5 member5"});
-
-            var cachedItem = this.CacheService.Get<string[]>(key);
-
-            Assert.IsNotNull(cachedItem);
-        }
-
-        [Test]
-        public void InsertAndOrderMembersZADD()
-        {
-            string key = "CacheServiceTest:InsertAndOrderMembersZADD";
-
-            this.CacheService.Zadd(key, new string[] { "3 member3", "5 member5", "2 member2", "4 member4", "1 member1" });
-
-            var cachedItem = this.CacheService.Get<string[]>(key);
-
-            Assert.IsTrue(
-                cachedItem[0] == "1 member1" 
-                && cachedItem[1] == "2 member2" 
-                && cachedItem[2] == "3 member3" 
-                && cachedItem[3] == "4 member4" 
-                && cachedItem[4] == "5 member5");
-        }
-
-        [Test]
-        public void UpdateAndReOrderMembersZADD()
-        {
-            string key = "CacheServiceTest:InsertAndOrderMembersZADD";
-
-            this.CacheService.Zadd(key, new string[] { "3 member3", "5 member5", "2 member2", "4 member4", "1 member1" });
-
-            this.CacheService.Zadd(key, new string[] { "5 member1" });
-            
-            var cachedItem = this.CacheService.Get<string[]>(key);
-
-            Assert.IsTrue(
-                cachedItem[0] == "2 member2" 
-                && cachedItem[1] == "3 member3" 
-                && cachedItem[2] == "4 member4" 
-                && cachedItem[3] == "5 member5" 
-                && cachedItem[4] == "6 member1");
-        }
-
-        [Test]
-        public void InsertUpdateAndReOrderMembersZADD()
-        {
-            string key = "CacheServiceTest:InsertUpdateAndReOrderMembersZADD";
-
-            this.CacheService.Zadd(key, new string[] { "3 member3", "5 member5", "2 member2", "4 member4", "1 member1" });
-
-            this.CacheService.Zadd(key, new string[] { "5 member1", "1 member6" });
-
-            var cachedItem = this.CacheService.Get<string[]>(key);
-
-            Assert.IsTrue(
-                cachedItem[0] == "1 member6" 
-                && cachedItem[1] == "2 member2" 
-                && cachedItem[2] == "3 member3" 
-                && cachedItem[3] == "4 member4" 
-                && cachedItem[4] == "5 member5" 
-                && cachedItem[5] == "6 member1");
-        }
-
-        [Test]
-        public void GetZcard()
-        {
-            string key = "CacheServiceTest:GetZcard";
-
-            this.CacheService.Zadd(key, new string[] { "1 member1", "2 member2", "3 member3", "4 member4", "5 member5" });
-
-            var cachedItem = this.CacheService.Zcard(key);
-
-            Assert.AreEqual(cachedItem, 5);
-        }
-
-        [Test]
-        public void GetZrank()
-        {
-            string key = "CacheServiceTest:GetZrank";
-
-            this.CacheService.Zadd(key, new string[] { "1 member1", "2 member2", "3 member3", "4 member4", "5 member5" });
-
-            var cachedItem = this.CacheService.ZRank(key, "member4");
-
-            Assert.AreEqual("3", cachedItem);
-        }
-
-        [Test]
-        public void GetZrange()
-        {
-            string key = "CacheServiceTest:GetZrank";
-            this.CacheService.Zadd(key, new string[] { "1 member1", "2 member2", "3 member3", "4 member4", "5 member5" });
-
-            var cachedItem = this.CacheService.ZRange(key, 1, 2);
-
-            Assert.IsTrue(cachedItem[0] == "2 member2" && cachedItem[1] == "3 member3");
         }
     }
 }
